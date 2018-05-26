@@ -76,36 +76,24 @@ namespace xDocumentTester
             {
                 client.Encoding = Encoding.UTF8;
                 client.Headers.Add("User-Agent: Other");
-                string htmlCode = client.DownloadString("http://www.sdna.gr/teams/paok");
+                string htmlCode = client.DownloadString("http://www.sdna.gr/teams/paok").Replace("<div", "\n<div");
                 StringReader reader = new StringReader(htmlCode);
                 int articlesFound = 0;
                 string line;
-                string htmlText = string.Empty;
+
 
                 //Το SDNA έχει όλες τις πληροφορίες σε μια γραμμή! Την εντοπίζουμε και την σπάμε σε σειρές ώστε να μπορέσουμε να πάρουμε τα άρθρα
                 bool foundStart = false;
                 while ((line = reader.ReadLine()) != null)
                 {
                     //Μέχρι να συναντήσουμε το <div class="row"> που είναι και η μοναδική γραμμή που θέλουμε
-                    if (!line.Contains("<div class=\"external-wrapper\">")) continue;
-                    htmlText = (line.TrimStart().Replace("<div", "\n<div") + "\n");
-                    break;
+                    if (line.Contains("<div class=\"external-wrapper\">"))
+                        foundStart = true;
+
+                    if (!foundStart) continue;
+
+                    richTextBox1.AppendText(line + Environment.NewLine);
                 }
-                //Εξάγουμε τις πληροφορίες από το string που δημιουργήσαμε
-                //reader = new StringReader(htmlText);
-                //while ((line = reader.ReadLine()) != null)
-                //{
-                //    //Στη δομή του XML πρώτα συναντάμε την ημερομηνία δημοσίευσης και μετά το άρθρο
-
-                //    if (line.Contains("<em class=\"placeholder\">"))
-                //    {
-                //        richTextBox1.AppendText("published at: " + line.Replace("<em class=\"placeholder\">", "") + "\n");
-                //    }
-
-                //}
-
-
-                richTextBox1.AppendText(htmlText);
             }
         }
     }
